@@ -21,8 +21,8 @@
         <el-menu-item-group>
           <el-menu-item index="/publish">发布文章</el-menu-item>
           <el-menu-item index="/content">内容列表</el-menu-item>
-          <el-menu-item index="1-3">评论列表</el-menu-item>
-          <el-menu-item index="1-4">素材管理</el-menu-item>
+          <el-menu-item index="/comment">评论列表</el-menu-item>
+          <el-menu-item index="/source">素材管理</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
         <el-submenu index="3">
@@ -36,7 +36,7 @@
             <el-menu-item index="1-4">粉丝列表</el-menu-item>
             </el-menu-item-group>
         </el-submenu>
-      <el-menu-item>账户信息</el-menu-item>
+      <el-menu-item index="/account">账户信息</el-menu-item>
     </el-menu>
   </div>
   </el-aside>
@@ -45,7 +45,7 @@
     <Header></Header>
   </el-header>
   <el-main>
-    <router-view></router-view>
+    <router-view :key="$route.path"></router-view>
   </el-main>
   </el-container>
 </el-container>

@@ -16,11 +16,12 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道列表">
-          <el-select placeholder="请选择" v-model="form.channel_id">
+          <!-- <el-select placeholder="请选择" v-model="form.channel_id">
             <el-option label="所有频道" :value='null'></el-option>
             <el-option :label="channel.name" :value="channel.id" v-for="channel in channels"
-            :key="channel.id"></el-option>
-          </el-select>
+            :key="channel.id"></el-option> -->
+            <ChannelSelect v-model="form.channel_id"></ChannelSelect>
+          <!-- </el-select> -->
         </el-form-item>
         <el-form-item label="活动时间">
           <el-date-picker
@@ -58,10 +59,10 @@
           </template>
         </el-table-column>
         <el-table-column prop="pubdate" label="发布日期"></el-table-column>
-        <el-table-column prop="address" label="操作">
+        <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="danger" @click.native="onDelete(scope.row.id)">删除</el-button>
-            <el-button type="primary">编辑</el-button>
+            <el-button type="primary" @click="$router.push('/publish/'+scope.row.id)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -78,7 +79,11 @@
 </template>
 
 <script>
+import ChannelSelect from '../components/channel'
 export default {
+  components: {
+    ChannelSelect
+  },
   name: 'abc',
   data () {
     return {
@@ -113,13 +118,13 @@ export default {
           type: 'info',
           label: '已删除'
         }
-      ],
-      channels: []
+      ]
+      // channels: []
     }
   },
   created () {
     this.loadAeticles(1)
-    this.loadChannels()// 加载频道列表
+    // this.loadChannels()// 加载频道列表
   },
   methods: {
     loadAeticles (a) {
@@ -151,25 +156,22 @@ export default {
     onPageChange (a) {
       this.loadAeticles(a)
     },
-    loadChannels () {
-      this.$axios({
-        method: 'GET',
-        url: '/channels'
-      }).then(res => {
-        console.log(res)
-        this.channels = res.data.data.channels
-      }).catch(err => {
-        console.log(err, '失败2')
-      })
-    },
+    // loadChannels () {
+    //   this.$axios({
+    //     method: 'GET',
+    //     url: '/channels'
+    //   }).then(res => {
+    //     console.log(res)
+    //     this.channels = res.data.data.channels
+    //   }).catch(err => {
+    //     console.log(err, '失败2')
+    //   })
+    // },
     onDelete (articleID) {
-      console.log(articleID)
+      // console.log(articleID)
       this.$axios({
         method: 'DELETE',
-        url: `/articles/${articleID}`,
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('user')}`
-        }
+        url: `/articles/${articleID}`
       }).then(res => {
         console.log(res)
       }).catch(err => {

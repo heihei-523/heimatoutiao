@@ -5,7 +5,11 @@ import Login from '../views/login.vue'
 import Publish from '../views/Publish.vue' // 文章发布
 import Page from '../views/page.vue' // 首页
 import Content from '../views/content.vue' // 内容列表
-import Nprogress from 'nprogress'
+import Nprogress from 'nprogress' // 条条
+import Comment from '../views/comment.vue' // 评论
+import CommentList from '../views/comment-list.vue'
+import Source from '../views/source.vue' // 素材管理
+import Account from '../views/account.vue' // 管理账户
 Vue.use(VueRouter)
 
 const routes = [
@@ -30,7 +34,29 @@ const routes = [
       {
         path: '/content',
         component: Content
-      }]
+      },
+      {
+        path: '/publish/:articleId', // 编辑文章e
+        component: Publish
+      },
+      {
+        path: '/comment',
+        component: Comment
+      },
+      {
+        path: '/comment/:articleId',
+        component: CommentList,
+        props: true
+      },
+      {
+        path: '/source',
+        component: Source
+      },
+      {
+        path: '/account',
+        component: Account
+      }
+    ]
   },
   {
     path: '/login',

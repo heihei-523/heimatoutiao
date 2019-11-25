@@ -2,7 +2,7 @@
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>发布文章</span>
+        <span>{{$route.params.articleId ? '编辑文章':'发布文章'}}</span>
       </div>
       <div class="text item">
         <el-form ref="form" :model="article" label-width="80px">
@@ -18,7 +18,7 @@
             ></quill-editor>
           </el-form-item>
           <el-form-item label="频道列表">
-            <el-select placeholder="请选择" v-model="article.channel_id">
+            <!-- <el-select placeholder="请选择" v-model="article.channel_id">
               <el-option label="所有频道" :value="null"></el-option>
               <el-option
                 :label="channel.name"
@@ -26,7 +26,8 @@
                 v-for="channel in channels"
                 :key="channel.id"
               ></el-option>
-            </el-select>
+            </el-select> -->
+            <ChannelSelect v-model="article.channel_id"></ChannelSelect>
           </el-form-item>
           <!-- <el-form-item label="封面">
             <el-radio-group v-model="form.resource">
@@ -50,10 +51,12 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
+import ChannelSelect from '../components/channel'
 export default {
   name: 'Publish',
   components: {
-    quillEditor
+    quillEditor,
+    ChannelSelect
   },
   data () {
     return {
@@ -66,15 +69,34 @@ export default {
         },
         channel_id: ''
       },
-      channels: [],
+      // channels: [],
       editorOption: {}
     }
   },
   created () {
-    this.loadChannels()
+    if (this.$route.params.articleId) {
+      this.loadArticle()
+    }
+    // this.loadArticle()
   },
   methods: {
+    loadArticle () {
+      this.$axios({
+        method: 'GET',
+        url: `/articles/${this.$route.params.articleId}`
+      }).then(res => {
+        console.log(res.data)
+        this.article = res.data.data
+      })
+    },
     onSubmit (draft) {
+      if (this.$route.params.articleId) {
+        this.updateArticle(draft)
+      } else {
+        this.addArticle(draft)
+      }
+    },
+    addArticle (draft) {
       this.$axios({
         method: 'POST',
         url: '/articles',
@@ -82,27 +104,48 @@ export default {
           draft
         },
         data: this.article
+      }).then(res => {
+        // console.log(res)
+        this.$message({
+          type: 'success',
+          message: '发表成功'
+        })
+      }).catch(err => {
+        console.log(err, '失败')
       })
-        .then(res => {
-          console.log(res)
-        })
-        .catch(err => {
-          console.log(err, '失败')
-        })
     },
-    loadChannels () {
+    updateArticle (draft) {
       this.$axios({
-        method: 'GET',
-        url: '/channels'
+        method: 'PUT',
+        url: `/articles/${this.$route.params.articleId}`,
+        params: {
+          draft
+        },
+        data: this.article
+      }).then(res => {
+        this.$message({
+          type: 'success',
+          message: '更新成功'
+        })
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('错了')
       })
-        .then(res => {
-          console.log(res)
-          this.channels = res.data.data.channels
-        })
-        .catch(err => {
-          console.log(err, '失败2')
-        })
     }
+
+    // loadChannels () {
+    //   this.$axios({
+    //     method: 'GET',
+    //     url: '/channels'
+    //   })
+    //     .then(res => {
+    //       console.log(res)
+    //       this.channels = res.data.data.channels
+    //     })
+    //     .catch(err => {
+    //       console.log(err, '失败2')
+    //     })
+    // }
   }
 }
 </script>
